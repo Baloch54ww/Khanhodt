@@ -39,12 +39,13 @@
 </head>
 <body>
     <div class="container">
-        <h2>ساخت لینک BPB</h2>
+        <h2>ساخت لینک و کانفیگ BPB</h2>
         <input type="text" id="username" placeholder="نام کاربر">
         <input type="number" id="days" placeholder="تعداد روز اعتبار">
         <input type="number" id="limit" placeholder="حجم گیگابایت">
-        <button onclick="generate()">تولید لینک</button>
+        <button onclick="generate()">تولید لینک و فایل کانفیگ</button>
         <p id="result" style="margin-top:20px;"></p>
+        <a id="downloadLink" style="display:none; margin-top:20px;" download>دانلود فایل کانفیگ</a>
     </div>
 
     <script>
@@ -58,11 +59,28 @@
                 now.setDate(now.getDate() + parseInt(days));
                 let expDate = now.toISOString().slice(0,10);
                 let link = `bpb://${user}?limit=${limit}GB&exp=${expDate}`;
+
                 document.getElementById('result').innerText = "لینک ساخته شده:\n" + link;
+
+                let configContent = `{
+    "username": "${user}",
+    "limit": "${limit}GB",
+    "expire": "${expDate}"
+}`;
+
+                let blob = new Blob([configContent], { type: 'application/json' });
+                let url = URL.createObjectURL(blob);
+
+                let downloadLink = document.getElementById('downloadLink');
+                downloadLink.href = url;
+                downloadLink.download = user + "_config.json";
+                downloadLink.style.display = "block";
+                downloadLink.innerText = "دانلود فایل کانفیگ";
             } else {
                 document.getElementById('result').innerText = "لطفاً همه فیلدها را پر کنید.";
+                document.getElementById('downloadLink').style.display = "none";
             }
         }
     </script>
 </body>
-          </html>
+</html>
